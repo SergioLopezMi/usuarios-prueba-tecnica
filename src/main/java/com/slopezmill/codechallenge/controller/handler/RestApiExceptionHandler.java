@@ -2,7 +2,6 @@ package com.slopezmill.codechallenge.controller.handler;
 
 import com.slopezmill.codechallenge.exception.InvalidDataException;
 import com.slopezmill.codechallenge.exception.InvalidInputException;
-import com.slopezmill.codechallenge.exception.UserException;
 import com.slopezmill.codechallenge.exception.UserNotFoundException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -12,11 +11,6 @@ import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExcep
 
 @ControllerAdvice
 public class RestApiExceptionHandler extends ResponseEntityExceptionHandler {
-
-    @ExceptionHandler(UserException.class)
-    public ResponseEntity<Object> handleUserException(UserException ex) {
-        return new ResponseEntity<>(ex.getMessage(), HttpStatus.NOT_FOUND);
-    }
 
     @ExceptionHandler(InvalidInputException.class)
     public ResponseEntity<Object> handleInvalidInputException(InvalidInputException ex) {

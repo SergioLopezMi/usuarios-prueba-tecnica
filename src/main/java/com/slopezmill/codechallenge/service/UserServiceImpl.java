@@ -5,7 +5,7 @@ import com.slopezmill.codechallenge.dto.AddressDto;
 import com.slopezmill.codechallenge.dto.UserDto;
 import com.slopezmill.codechallenge.exception.InvalidDataException;
 import com.slopezmill.codechallenge.exception.InvalidInputException;
-import com.slopezmill.codechallenge.exception.UserException;
+import com.slopezmill.codechallenge.exception.UserNotFoundException;
 import com.slopezmill.codechallenge.jpa.UserJpa;
 import com.slopezmill.codechallenge.mapper.UserMapper;
 import com.slopezmill.codechallenge.repository.UserRepository;
@@ -31,13 +31,13 @@ public class UserServiceImpl implements UserService {
     @Override
     public List<UserDto> getAllUsers() {
         LOGGER.info("[getAllUsers] - Start get all users");
-        return userRepository.findAll().stream()
+        return this.userRepository.findAll().stream()
                 .map(this.userMapper::toUserDto)
                 .collect(Collectors.toList());
     }
 
     @Override
-    public UserDto getUserById(Integer id) throws InvalidDataException, UserException {
+    public UserDto getUserById(Integer id) throws InvalidDataException, UserNotFoundException {
         LOGGER.info("[getUserById] - Start get user by id : {}", id);
 
         if (id == null) {
@@ -45,7 +45,7 @@ public class UserServiceImpl implements UserService {
         }
 
         final UserJpa userJpa = this.userRepository.findById(id)
-                .orElseThrow(() -> new UserException(Errors.USER_NOT_FOUND));
+                .orElseThrow(() -> new UserNotFoundException(Errors.USER_NOT_FOUND));
 
         LOGGER.info("[getUserById] - End get user by id");
         return this.userMapper.toUserDto(userJpa);
@@ -58,15 +58,15 @@ public class UserServiceImpl implements UserService {
                 Boolean.FALSE.equals(this.validateAddress(userDto.getAddress()))) {
             throw new InvalidInputException(Errors.INVALID_INPUT);
         }
-        UserJpa addedUser = userRepository.save(userMapper.toUserJpa(userDto));
+        UserJpa addedUser = this.userRepository.save(userMapper.toUserJpa(userDto));
 
         LOGGER.info("[createUser] - End create user");
-        return userMapper.toUserDto(addedUser);
+        return this.userMapper.toUserDto(addedUser);
     }
 
     @Override
     public UserDto updateUserById(Integer id, UserDto userDto)
-            throws InvalidDataException, InvalidInputException, UserException {
+            throws InvalidDataException, InvalidInputException, UserNotFoundException {
         LOGGER.info("[updateUserById] - Start update user by id : {}", id);
         if (id == null) {
             throw new InvalidDataException(Errors.INVALID_USER_ID);
@@ -78,20 +78,20 @@ public class UserServiceImpl implements UserService {
         }
 
         this.userRepository.findById(id)
-                .orElseThrow(() -> new UserException(Errors.USER_NOT_FOUND));
+                .orElseThrow(() -> new UserNotFoundException(Errors.USER_NOT_FOUND));
 
         LOGGER.info("[updateUserById] - End update user by id");
         return this.userMapper.toUserDto(this.userRepository.save(this.userMapper.toUserJpa(userDto)));
     }
 
     @Override
-    public void deleteUserById(Integer id) throws InvalidDataException, UserException {
+    public void deleteUserById(Integer id) throws InvalidDataException, UserNotFoundException {
         LOGGER.info("[deleteUserById] - Start delete user by id : {}", id);
         if (id == null) {
             throw new InvalidDataException(Errors.INVALID_USER_ID);
         }
         final UserJpa userJpa = this.userRepository.findById(id)
-                .orElseThrow(() -> new UserException(Errors.USER_NOT_FOUND));
+                .orElseThrow(() -> new UserNotFoundException(Errors.USER_NOT_FOUND));
 
         LOGGER.info("[deleteUserById] - End delete user by id");
         this.userRepository.delete(userJpa);

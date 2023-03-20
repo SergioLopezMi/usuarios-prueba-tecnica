@@ -3,7 +3,7 @@ package com.slopezmill.codechallenge.controller;
 import com.slopezmill.codechallenge.dto.UserDto;
 import com.slopezmill.codechallenge.exception.InvalidDataException;
 import com.slopezmill.codechallenge.exception.InvalidInputException;
-import com.slopezmill.codechallenge.exception.UserException;
+import com.slopezmill.codechallenge.exception.UserNotFoundException;
 import com.slopezmill.codechallenge.service.UserService;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
@@ -40,7 +40,7 @@ public class UserController {
     @GetMapping("/getusersById/{id}")
     @ResponseStatus(code = HttpStatus.OK)
     public ResponseEntity<UserDto> getUserById(@PathVariable Integer id)
-            throws InvalidDataException, UserException {
+            throws InvalidDataException, UserNotFoundException {
         LOGGER.info("[controller - getUserById] - Start get user by id{}", id);
         return new ResponseEntity<>(this.userService.getUserById(id), HttpStatus.OK);
     }
@@ -48,7 +48,7 @@ public class UserController {
     @PutMapping("/updateUsersById/{id}")
     @ResponseStatus(code = HttpStatus.OK)
     public ResponseEntity<UserDto> updateUserById(@PathVariable Integer id, @RequestBody UserDto userDto)
-            throws InvalidInputException, InvalidDataException, UserException {
+            throws InvalidInputException, InvalidDataException, UserNotFoundException {
         LOGGER.info("[controller - updateUserById] - Start update user by id {}", id);
         return new ResponseEntity<>(this.userService.updateUserById(id, userDto), HttpStatus.OK);
     }
@@ -56,7 +56,7 @@ public class UserController {
     @DeleteMapping("/deleteUsersById/{id}")
     @ResponseStatus(code = HttpStatus.OK)
     public ResponseEntity<Void> deleteUserById(@PathVariable Integer id)
-            throws InvalidDataException, UserException {
+            throws InvalidDataException, UserNotFoundException {
         LOGGER.info("[controller - deleteUserById] - Start delete user by id {}", id);
         this.userService.deleteUserById(id);
         return new ResponseEntity<>(HttpStatus.OK);
